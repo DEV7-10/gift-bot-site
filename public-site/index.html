@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Gift Bot — Discord's Favorite Giveaway Bot</title>
+<meta name="description" content="Gift Bot — The ultimate Discord bot for gift drops, lucky wheels, and streaks. Add it to your server now!"/>
+<link rel="icon" href="avatar.png"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:#0D0B14;color:#E8E0F5;overflow-x:hidden}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:#0D0B14}
+::-webkit-scrollbar-thumb{background:#2E2840;border-radius:4px}
+::selection{background:rgba(139,92,246,.3);color:#fff}
+
+/* Animations */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes softPulse{0%,100%{box-shadow:0 0 0 0 rgba(124,58,237,.3)}50%{box-shadow:0 0 0 12px rgba(124,58,237,0)}}
+@keyframes wheelSpin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes countUp{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+
+.float{animation:float 4s ease-in-out infinite}
+.float-d1{animation:float 4s ease-in-out 1s infinite}
+.float-d2{animation:float 4s ease-in-out 2s infinite}
+
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(13,11,20,.7);border-bottom:1px solid rgba(255,255,255,.05);transition:all .3s}
+.nav-inner{max-width:72rem;margin:0 auto;padding:0 1.5rem;height:4rem;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.nav-logo img{width:2.25rem;height:2.25rem;border-radius:.75rem;border:1px solid rgba(124,58,237,.4)}
+.nav-logo span{font-weight:700;font-size:1.125rem;color:#fff}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{font-size:.875rem;color:#9CA3AF;text-decoration:none;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.lang-toggle{display:flex;gap:.25rem;background:rgba(255,255,255,.05);padding:.25rem;border-radius:.5rem;border:1px solid rgba(255,255,255,.05)}
+.lang-btn{font-size:.75rem;padding:.25rem .625rem;border-radius:.375rem;border:none;cursor:pointer;font-weight:500;background:transparent;color:#6B7280;transition:all .2s}
+.lang-btn.active{background:rgba(124,58,237,.2);color:#A78BFA;border:1px solid rgba(124,58,237,.4)}
+.cta-btn{display:inline-flex;align-items:center;gap:.5rem;background:#7C3AED;color:#fff;font-size:.875rem;font-weight:600;padding:.5rem 1rem;border-radius:.5rem;border:none;cursor:pointer;text-decoration:none;transition:background .2s}
+.cta-btn:hover{background:#6D28D9}
+.mobile-menu{display:none;background:none;border:none;color:#9CA3AF;cursor:pointer}
+
+/* Hero */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.1;filter:blur(6px);transform:scale(1.05)}
+.hero-bg-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(13,11,20,.6),rgba(13,11,20,.8),#0D0B14)}
+.hero-glow{position:absolute;top:25%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:rgba(124,58,237,.06);border-radius:50%;filter:blur(120px);pointer-events:none}
+.hero-inner{position:relative;z-index:10;max-width:72rem;margin:0 auto;padding:8rem 1.5rem 5rem;display:flex;flex-direction:column;align-items:center;gap:3rem}
+@media(min-width:1024px){.hero-inner{flex-direction:row;gap:5rem}}
+.hero-text{flex:1;text-align:center}
+@media(min-width:1024px){.hero-text{text-align:left}}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#A78BFA;font-size:.875rem;font-weight:500;padding:.375rem 1rem;border-radius:9999px;margin-bottom:1.5rem}
+.hero-badge .dot{width:.5rem;height:.5rem;background:#34D399;border-radius:50%;animation:pulse 2s infinite}
+.hero-title{font-size:2.5rem;font-weight:800;color:#fff;line-height:1.25;margin-bottom:1.5rem}
+@media(min-width:640px){.hero-title{font-size:3rem}}
+@media(min-width:1024px){.hero-title{font-size:3.75rem}}
+.hero-title .highlight{color:#A78BFA}
+.hero-desc{font-size:1.125rem;color:#9CA3AF;max-width:28rem;margin:0 auto 2rem;line-height:1.625}
+@media(min-width:1024px){.hero-desc{margin:0 0 2rem 0}}
+.hero-buttons{display:flex;flex-direction:column;align-items:center;gap:1rem}
+@media(min-width:640px){.hero-buttons{flex-direction:row;justify-content:center}}
+@media(min-width:1024px){.hero-buttons{justify-content:flex-start}}
+.primary-btn{display:inline-flex;align-items:center;gap:.75rem;background:#7C3AED;color:#fff;font-weight:600;padding:.875rem 1.75rem;border-radius:.75rem;text-decoration:none;transition:background .2s;animation:softPulse 2.5s infinite;position:relative}
+.primary-btn:hover{background:#6D28D9}
+.secondary-btn{display:inline-flex;align-items:center;gap:.5rem;color:#9CA3AF;font-weight:500;padding:.875rem 1.25rem;border-radius:.75rem;border:1px solid rgba(255,255,255,.1);text-decoration:none;transition:all .2s}
+.secondary-btn:hover{color:#fff;border-color:rgba(255,255,255,.2)}
+
+/* Hero visual */
+.hero-visual{flex:1;display:flex;justify-content:center}
+.avatar-wrap{position:relative}
+.avatar-glow{position:absolute;inset:0;background:rgba(124,58,237,.2);border-radius:1.5rem;filter:blur(60px);transform:scale(1.1)}
+.avatar-img{position:relative;width:14rem;height:14rem;border-radius:1.5rem;overflow:hidden;border:2px solid rgba(124,58,237,.3);box-shadow:0 25px 50px rgba(124,58,237,.2);animation:float 4s ease-in-out infinite}
+@media(min-width:640px){.avatar-img{width:18rem;height:18rem}}
+.avatar-img img{width:100%;height:100%;object-fit:cover}
+.emoji-float{position:absolute;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:1rem;display:flex;align-items:center;justify-content:center;cursor:default;transition:transform .2s}
+.emoji-float:hover{transform:scale(1.1)}
+.emoji-1{top:-1.25rem;right:-1.25rem;width:4rem;height:4rem;font-size:1.75rem;animation:float 3.5s ease-in-out .5s infinite}
+.emoji-2{bottom:-1rem;left:-1.25rem;width:3.5rem;height:3.5rem;font-size:1.5rem;animation:float 3.5s ease-in-out 1.2s infinite}
+.emoji-3{top:-.5rem;left:-2rem;width:3rem;height:3rem;font-size:1.25rem;animation:float 3.5s ease-in-out .8s infinite}
+
+/* Section common */
+.section{padding:6rem 1.5rem}
+.section-inner{max-width:72rem;margin:0 auto}
+.section-narrow{max-width:56rem;margin:0 auto}
+.section-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#A78BFA;font-size:.875rem;font-weight:500;padding:.375rem 1rem;border-radius:9999px;margin-bottom:1rem}
+.section-title{font-size:2.25rem;font-weight:700;color:#fff;margin-bottom:1rem}
+@media(min-width:640px){.section-title{font-size:2.5rem}}
+.section-subtitle{font-size:1.125rem;color:#9CA3AF;max-width:28rem;margin:0 auto}
+.section-header{text-align:center;margin-bottom:4rem}
+
+/* Feature cards */
+.features-grid{display:grid;gap:2rem}
+@media(min-width:768px){.features-grid{grid-template-columns:1fr 1fr}}
+.feature-card{background:rgba(20,17,31,.7);border:1px solid rgba(255,255,255,.05);border-radius:1rem;padding:2rem;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s,border-color .3s}
+.feature-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(124,58,237,.12);border-color:rgba(124,58,237,.25)}
+.feature-card .corner{position:absolute;top:0;right:0;width:8rem;height:8rem;background:rgba(124,58,237,.05);border-bottom-left-radius:100%}
+.feature-icon{width:3.5rem;height:3.5rem;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.2);border-radius:1rem;display:flex;align-items:center;justify-content:center;font-size:1.75rem;margin-bottom:1.5rem}
+.feature-icon.wheel{animation:wheelSpin 20s linear infinite}
+.feature-title{font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:.75rem}
+.feature-desc{color:#9CA3AF;line-height:1.625;margin-bottom:1.5rem}
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:.75rem}
+.feature-list li{display:flex;align-items:center;gap:.75rem}
+.check-icon{width:1.5rem;height:1.5rem;background:rgba(16,185,129,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.check-icon svg{width:.875rem;height:.875rem;color:#34D399}
+.feature-list span{color:#D1D5DB;font-size:.875rem}
+
+/* Streak bar */
+.streak-wrap{margin-top:1.5rem;padding:1rem;background:rgba(28,24,41,.6);border-radius:.75rem;border:1px solid rgba(255,255,255,.05)}
+.streak-header{display:flex;justify-content:space-between;font-size:.75rem;color:#6B7282;margin-bottom:.5rem}
+.streak-value{color:#A78BFA;font-weight:600}
+.streak-track{width:100%;height:.5rem;background:#252035;border-radius:.25rem;overflow:hidden}
+.streak-fill{height:100%;border-radius:.25rem;background:linear-gradient(90deg,#7C3AED,#A78BFA);transition:width 1s ease}
+.streak-range{display:flex;justify-content:space-between;font-size:.75rem;color:#4A5565;margin-top:.5rem}
+
+/* Steps */
+.steps-grid{display:grid;gap:1.5rem}
+@media(min-width:640px){.steps-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1024px){.steps-grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+.step-card{text-align:center;padding:1.5rem;background:rgba(28,24,41,.5);border:1px solid rgba(255,255,255,.05);border-radius:1rem;transition:border-color .2s}
+.step-card:hover{border-color:rgba(124,58,237,.2)}
+.step-emoji{font-size:1.75rem;margin-bottom:.75rem}
+.step-number{width:2.5rem;height:2.5rem;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.25);border-radius:.75rem;display:flex;align-items:center;justify-content:center;color:#A78BFA;font-weight:700;font-size:.875rem;margin:0 auto 1rem}
+.step-title{font-weight:600;color:#fff;margin-bottom:.5rem}
+.step-desc{color:#9CA3AF;font-size:.875rem;line-height:1.625}
+
+/* Commands */
+.cmd-list{display:flex;flex-direction:column;gap:.75rem}
+.cmd-card{display:flex;align-items:flex-start;gap:1rem;padding:1rem;background:rgba(20,17,31,.5);border:1px solid rgba(255,255,255,.05);border-radius:.75rem;transition:all .2s}
+.cmd-card:hover{background:rgba(124,58,237,.05);border-color:rgba(124,58,237,.2)}
+.cmd-name{color:#A78BFA;font-family:monospace;font-size:.875rem;background:rgba(124,58,237,.1);padding:.25rem .75rem;border-radius:.5rem;white-space:nowrap}
+.cmd-title{font-weight:500;color:#fff;font-size:.875rem}
+.cmd-desc{color:#6B7282;font-size:.75rem;margin-top:.25rem}
+
+/* Stats */
+.stats-grid{display:grid;gap:1.5rem}
+@media(min-width:640px){.stats-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:1024px){.stats-grid{grid-template-columns:1fr 1fr 1fr 1fr}}
+.stat-card{text-align:center;padding:1.5rem;background:rgba(28,24,41,.5);border:1px solid rgba(255,255,255,.05);border-radius:1rem;transition:border-color .2s}
+.stat-card:hover{border-color:rgba(124,58,237,.2)}
+.stat-icon{width:3rem;height:3rem;background:rgba(124,58,237,.1);border-radius:.75rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem}
+.stat-icon svg{width:1.5rem;height:1.5rem;color:#A78BFA}
+.stat-number{font-size:1.875rem;font-weight:700;color:#fff}
+.stat-label{color:#9CA3AF;font-size:.875rem;margin-top:.25rem}
+
+/* CTA */
+.cta-wrap{position:relative;background:rgba(20,17,31,.7);border:1px solid rgba(255,255,255,.05);border-radius:1.5rem;padding:2.5rem;overflow:hidden;text-align:center}
+@media(min-width:640px){.cta-wrap{padding:3.5rem}}
+.cta-bg{position:absolute;inset:0;background:linear-gradient(to bottom right,rgba(124,58,237,.05),transparent,rgba(124,58,237,.05));pointer-events:none}
+.cta-emoji{font-size:3rem;margin-bottom:1.5rem;display:inline-block;cursor:default;animation:float 3s ease-in-out infinite}
+.cta-title{font-size:2rem;font-weight:700;color:#fff;margin-bottom:1rem}
+@media(min-width:640px){.cta-title{font-size:2.5rem}}
+.cta-desc{font-size:1.125rem;color:#9CA3AF;max-width:28rem;margin:0 auto 2rem}
+.cta-btn{display:inline-flex;align-items:center;gap:.75rem;background:#7C3AED;color:#fff;font-weight:600;padding:1rem 2rem;border-radius:.75rem;text-decoration:none;font-size:1.125rem;transition:background .2s}
+.cta-btn:hover{background:#6D28D9}
+
+/* Footer */
+.footer{padding:2.5rem 1.5rem;border-top:1px solid rgba(255,255,255,.05)}
+.footer-inner{max-width:72rem;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:1rem}
+@media(min-width:640px){.footer-inner{flex-direction:row;justify-content:space-between}}
+.footer-left{display:flex;align-items:center;gap:.75rem}
+.footer-left img{width:2rem;height:2rem;border-radius:.5rem;border:1px solid rgba(124,58,237,.3)}
+.footer-left span{color:#9CA3AF;font-size:.875rem}
+.footer-links{display:flex;gap:1.5rem}
+.footer-links a{color:#6B7282;font-size:.875rem;text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:#A78BFA}
+
+/* Alternate bg */
+.alt-bg{background:rgba(20,17,31,.4)}
+
+/* Discord icon */
+.discord-icon{width:1.25rem;height:1.25rem;fill:currentColor}
+
+/* Mobile menu */
+.mobile-nav{display:none;background:rgba(13,11,20,.95);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.05);padding:1rem}
+.mobile-nav.open{display:block}
+.mobile-nav a{display:block;color:#D1D5DB;padding:.5rem 0;text-decoration:none;font-size:.875rem}
+.mobile-nav .cta-btn{margin-top:.75rem;width:100%;justify-content:center}
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <img src="avatar.png" alt="Gift Bot"/>
+      <span>Gift Bot</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#features" data-en="Features" data-ar="المميزات">Features</a>
+      <a href="#how-it-works" data-en="How It Works" data-ar="كيف يعمل">How It Works</a>
+      <a href="#commands" data-en="Commands" data-ar="الأوامر">Commands</a>
+      <a href="#stats" data-en="Stats" data-ar="الإحصائيات">Stats</a>
+    </div>
+    <div class="nav-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('ar')">عربي</button>
+      </div>
+      <a href="https://discord.com/oauth2/authorize?client_id=1525403769276465152&permissions=8&integration_type=0&scope=bot" target="_blank" rel="noopener" class="cta-btn" id="navCta">
+        <svg class="discord-icon" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+        <span data-en="Add to Discord" data-ar="أضف للديسكورد">Add to Discord</span>
+      </a>
+      <button class="mobile-menu" onclick="toggleMenu()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#features" onclick="toggleMenu()" data-en="Features" data-ar="المميزات">Features</a>
+    <a href="#how-it-works" onclick="toggleMenu()" data-en="How It Works" data-ar="كيف يعمل">How It Works</a>
+    <a href="#commands" onclick="toggleMenu()" data-en="Commands" data-ar="الأوامر">Commands</a>
+    <a href="#stats" onclick="toggleMenu()" data-en="Stats" data-ar="الإحصائيات">Stats</a>
+    <a href="https://discord.com/oauth2/authorize?client_id=1525403769276465152&permissions=8&integration_type=0&scope=bot" target="_blank" class="cta-btn" style="margin-top:.75rem">
+      <span data-en="Add to Discord" data-ar="أضف للديسكورد">Add to Discord</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg">
+    <img src="banner.png" alt=""/>
+    <div class="hero-bg-overlay"></div>
+  </div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        <span data-en="Live & Active" data-ar="متصل ونشط">Live & Active</span>
+      </div>
+      <h1 class="hero-title">
+        <span data-en="Gifts, Drops &" data-ar="هدايا، دروب و">Gifts, Drops &</span><br/>
+        <span class="highlight" data-en="Lucky Wheels" data-ar="عجلة الحظ">Lucky Wheels</span>
+      </h1>
+      <p class="hero-desc" data-en="The ultimate Discord bot for gift drops and lucky wheels. Be the fastest to grab gifts, build your streak, and spin the wheel of fortune every 200 messages." data-ar="بوت الديسكورد الأول للهدايا والدروب وعجلة الحظ. كن أسرع واحد واخد الهدايا، ابنِ ستريكك، ولف عجلة الحظ كل 200 رسالة.">The ultimate Discord bot for gift drops and lucky wheels. Be the fastest to grab gifts, build your streak, and spin the wheel of fortune every 200 messages.</p>
+      <div class="hero-buttons">
+        <a href="https://discord.com/oauth2/authorize?client_id=1525403769276465152&permissions=8&integration_type=0&scope=bot" target="_blank" class="primary-btn">
+          <svg class="discord-icon" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+          <span data-en="Add Gift Bot" data-ar="أضف جيفت بوت">Add Gift Bot</span>
+        </a>
+        <a href="#features" class="secondary-btn">
+          <span data-en="Learn More" data-ar="اعرف أكثر">Learn More</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="avatar-wrap">
+        <div class="avatar-glow"></div>
+        <div class="avatar-img">
+          <img src="avatar.png" alt="Gift Bot"/>
+        </div>
+        <div class="emoji-float emoji-1">🎁</div>
+        <div class="emoji-float emoji-2">🎰</div>
+        <div class="emoji-float emoji-3">⚡</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="section">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-badge" data-en="Core Features" data-ar="المميزات الأساسية">Core Features</div>
+      <h2 class="section-title" data-en="Two Powerful Features," data-ar="ميزتين قويتين،">Two Powerful Features,</h2>
+      <p class="section-subtitle" data-en="Endless excitement in your server." data-ar="إثارة لا تنتهي في سيرفرك.">Endless excitement in your server.</p>
+    </div>
+    <div class="features-grid">
+      <!-- Drop -->
+      <div class="feature-card reveal">
+        <div class="corner"></div>
+        <div class="feature-icon">🎁</div>
+        <h3 class="feature-title" data-en="Gift Drops" data-ar="دروب الهدايا">Gift Drops</h3>
+        <p class="feature-desc" data-en="The bot sends gift drops in your server every hour. A gift button appears — the fastest person to click it wins the account! Speed is everything." data-ar="البوت يرسل دروب هدايا في سيرفرك كل ساعة تقريباً. يظهر زر هدية — أسرع شخص يضغطه يفوز بالحساب! السرعة هي كل شيء.">The bot sends gift drops in your server every hour. A gift button appears — the fastest person to click it wins the account! Speed is everything.</p>
+        <ul class="feature-list">
+          <li><span class="check-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></span><span data-en="Automatic drops every hour" data-ar="دروب تلقائية كل ساعة">Automatic drops every hour</span></li>
+          <li><span class="check-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></span><span data-en="Fastest click wins the account" data-ar="أسرع ضغطة تفوز بالحساب">Fastest click wins the account</span></li>
+          <li><span class="check-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></span><span data-en="Real accounts as rewards" data-ar="حسابات حقيقية كمكافآت">Real accounts as rewards</span></li>
+        </ul>
+      </div>
+      <!-- Wheel -->
+      <div class="feature-card reveal">
+        <div class="corner"></div>
+        <div class="feature-icon wheel">🎡</div>
+        <h3 class="feature-title" data-en="Lucky Wheel" data-ar="عجلة الحظ">Lucky Wheel</h3>
+        <p class="feature-desc" data-en="Every 200 messages, you can spin the wheel of fortune! Your streak determines your luck percentage — from 10% to 90%." data-ar="كل 200 رسالة تقدر تلف عجلة الحظ! الستريك يحدد نسبة حظك — كل ما ستريك أعلى، فرصتك أحسن من 10% لـ 90%.">Every 200 messages, you can spin the wheel of fortune! Your streak determines your luck percentage — from 10% to 90%.</p>
+        <ul class="feature-list">
+          <li><span class="check-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></span><span data-en="Spin every 200 messages" data-ar="لف كل 200 رسالة">Spin every 200 messages</span></li>
+          <li><span class="check-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></span><span data-en="Streak boosts your luck (10%–90%)" data-ar="الستريك يزيد حظك (10%–90%)">Streak boosts your luck (10%–90%)</span></li>
+          <li><span class="check-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg></span><span data-en="Streak emoji shows your chance" data-ar="إيموجي الستريك يبين نسبتك">Streak emoji shows your chance</span></li>
+        </ul>
+        <div class="streak-wrap">
+          <div class="streak-header">
+            <span data-en="Streak Level" data-ar="مستوى الستريك">Streak Level</span>
+            <span class="streak-value" id="streakLabel">30%</span>
+          </div>
+          <div class="streak-track">
+            <div class="streak-fill" id="streakBar" style="width:30%"></div>
+          </div>
+          <div class="streak-range"><span>10%</span><span>90%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="section alt-bg">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-badge" data-en="Step by Step" data-ar="خطوة بخطوة">Step by Step</div>
+      <h2 class="section-title" data-en="How It Works" data-ar="كيف يعمل">How It Works</h2>
+      <p class="section-subtitle" data-en="Getting started with Gift Bot is simple and fun." data-ar="البدء مع جيفت بوت سهل وممتع.">Getting started with Gift Bot is simple and fun.</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card reveal"><div class="step-emoji">🤖</div><div class="step-number">1</div><div class="step-title" data-en="Add the Bot" data-ar="أضف البوت">Add the Bot</div><div class="step-desc" data-en="Invite Gift Bot to your Discord server with one click." data-ar="ادعُ جيفت بوت لسيرفرك بضغطة واحدة.">Invite Gift Bot to your Discord server with one click.</div></div>
+      <div class="step-card reveal"><div class="step-emoji">⏰</div><div class="step-number">2</div><div class="step-title" data-en="Wait for Drops" data-ar="استنى الدروب">Wait for Drops</div><div class="step-desc" data-en="Gift drops appear automatically every hour in your channels." data-ar="دروب الهدايا تظهر تلقائياً كل ساعة في القنوات.">Gift drops appear automatically every hour in your channels.</div></div>
+      <div class="step-card reveal"><div class="step-emoji">👆</div><div class="step-number">3</div><div class="step-title" data-en="Click Fast!" data-ar="اضغط بسرعة!">Click Fast!</div><div class="step-desc" data-en="Be the fastest to click the gift button and win the account." data-ar="كن أسرع واحد يضغط زر الهدية واكسب الحساب.">Be the fastest to click the gift button and win the account.</div></div>
+      <div class="step-card reveal"><div class="step-emoji">🔥</div><div class="step-number">4</div><div class="step-title" data-en="Build Your Streak" data-ar="ابنِ ستريكك">Build Your Streak</div><div class="step-desc" data-en="Stay active, build your streak, and spin the lucky wheel every 200 messages." data-ar="ابقَ نشيط، ابنِ ستريكك، ولف عجلة الحظ كل 200 رسالة.">Stay active, build your streak, and spin the lucky wheel every 200 messages.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Commands -->
+<section id="commands" class="section">
+  <div class="section-narrow">
+    <div class="section-header reveal">
+      <div class="section-badge" data-en="Bot Commands" data-ar="أوامر البوت">Bot Commands</div>
+      <h2 class="section-title" data-en="Commands" data-ar="الأوامر">Commands</h2>
+      <p class="section-subtitle" data-en="Simple slash commands to interact with Gift Bot." data-ar="أوامر سلاش بسيطة للتعامل مع جيفت بوت.">Simple slash commands to interact with Gift Bot.</p>
+    </div>
+    <div class="cmd-list">
+      <div class="cmd-card reveal"><code class="cmd-name">/drop</code><div><div class="cmd-title" data-en="Start a gift drop in the channel" data-ar="ابدأ دروب هدية في القناة">Start a gift drop in the channel</div><div class="cmd-desc" data-en="Admins can manually trigger a gift drop for the server." data-ar="الأدمن يقدر يبدأ دروب هدية يدوياً للسيرفر.">Admins can manually trigger a gift drop for the server.</div></div></div>
+      <div class="cmd-card reveal"><code class="cmd-name">/wheel</code><div><div class="cmd-title" data-en="Spin the lucky wheel" data-ar="لف عجلة الحظ">Spin the lucky wheel</div><div class="cmd-desc" data-en="Requires 200 messages. Your streak determines your luck percentage." data-ar="يحتاج 200 رسالة. الستريك يحدد نسبة حظك.">Requires 200 messages. Your streak determines your luck percentage.</div></div></div>
+      <div class="cmd-card reveal"><code class="cmd-name">/streak</code><div><div class="cmd-title" data-en="Check your current streak" data-ar="شوف ستريكك الحالي">Check your current streak</div><div class="cmd-desc" data-en="View your message streak and luck percentage for the wheel." data-ar="شوف ستريك رسائلك ونسبة حظك في العجلة.">View your message streak and luck percentage for the wheel.</div></div></div>
+      <div class="cmd-card reveal"><code class="cmd-name">/leaderboard</code><div><div class="cmd-title" data-en="View the top gift grabbers" data-ar="شوف أفضل من أخذوا هدايا">View the top gift grabbers</div><div class="cmd-desc" data-en="See who has the most gifts and highest streaks in the server." data-ar="شوف من عنده أكثر هدايا وأعلى ستريكات في السيرفر.">See who has the most gifts and highest streaks in the server.</div></div></div>
+      <div class="cmd-card reveal"><code class="cmd-name">/profile</code><div><div class="cmd-title" data-en="View your gift profile" data-ar="شوف بروفايلك">View your gift profile</div><div class="cmd-desc" data-en="See your total gifts, streak, messages, and luck stats." data-ar="شوف مجموع هداياك، ستريكك، رسائلك، وإحصائيات حظك.">See your total gifts, streak, messages, and luck stats.</div></div></div>
+      <div class="cmd-card reveal"><code class="cmd-name">/help</code><div><div class="cmd-title" data-en="Get help and bot info" data-ar="مساعدة ومعلومات البوت">Get help and bot info</div><div class="cmd-desc" data-en="Shows all available commands and how to use them." data-ar="يعرض كل الأوامر المتاحة وكيفية استخدامها.">Shows all available commands and how to use them.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section id="stats" class="section alt-bg">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-badge" data-en="By the Numbers" data-ar="بالأرقام">By the Numbers</div>
+      <h2 class="section-title" data-en="Gift Bot Stats" data-ar="إحصائيات جيفت بوت">Gift Bot Stats</h2>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card reveal"><div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/></svg></div><div class="stat-number" data-target="500">0+</div><div class="stat-label" data-en="Servers" data-ar="سيرفر">Servers</div></div>
+      <div class="stat-card reveal"><div class="stat-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div><div class="stat-number" data-target="50000">0+</div><div class="stat-label" data-en="Users" data-ar="مستخدم">Users</div></div>
+      <div class="stat-card reveal"><div class="stat-icon">🎁</div><div class="stat-number" data-target="12000">0+</div><div class="stat-label" data-en="Gifts Given" data-ar="هدية مقدمة">Gifts Given</div></div>
+      <div class="stat-card reveal"><div class="stat-icon">🎡</div><div class="stat-number" data-target="30000">0+</div><div class="stat-label" data-en="Wheel Spins" data-ar="لفة عجلة">Wheel Spins</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section">
+  <div class="section-narrow">
+    <div class="cta-wrap reveal">
+      <div class="cta-bg"></div>
+      <div style="position:relative;z-index:10">
+        <div class="cta-emoji">🎁</div>
+        <h2 class="cta-title" data-en="Ready to Start Winning?" data-ar="جاهز تبدأ تكسب؟">Ready to Start Winning?</h2>
+        <p class="cta-desc" data-en="Add Gift Bot to your server now and join thousands of users already winning gifts and spinning the wheel!" data-ar="أضف جيفت بوت لسيرفرك الحين وانضم لآلاف المستخدمين اللي يكسبون هدايا ويلفون العجلة!">Add Gift Bot to your server now and join thousands of users already winning gifts and spinning the wheel!</p>
+        <a href="https://discord.com/oauth2/authorize?client_id=1525403769276465152&permissions=8&integration_type=0&scope=bot" target="_blank" class="cta-btn">
+          <svg class="discord-icon" viewBox="0 0 24 24" style="width:1.5rem;height:1.5rem"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03z"/></svg>
+          <span data-en="Add Gift Bot to Discord" data-ar="أضف جيفت بوت للديسكورد">Add Gift Bot to Discord</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-left">
+      <img src="avatar.png" alt="Gift Bot"/>
+      <span>© 2025 Gift Bot. <span data-en="All rights reserved." data-ar="جميع الحقوق محفوظة.">All rights reserved.</span></span>
+    </div>
+    <div class="footer-links">
+      <a href="https://discord.com/oauth2/authorize?client_id=1525403769276465152&permissions=8&integration_type=0&scope=bot" target="_blank" data-en="Add Bot" data-ar="أضف البوت">Add Bot</a>
+      <a href="#commands" data-en="Commands" data-ar="الأوامر">Commands</a>
+      <a href="#features" data-en="Features" data-ar="المميزات">Features</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Language toggle
+let lang='en';
+function setLang(l){
+  lang=l;
+  document.documentElement.setAttribute('dir',l==='ar'?'rtl':'ltr');
+  document.documentElement.setAttribute('lang',l);
+  document.querySelectorAll('.lang-btn').forEach(b=>{b.classList.remove('active')});
+  document.querySelector(`.lang-btn[onclick="setLang('${l}')"]`).classList.add('active');
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    const t=l==='ar'?el.getAttribute('data-ar'):el.getAttribute('data-en');
+    if(t)el.textContent=t;
+  });
+}
+
+// Scroll reveal
+const revealEls=document.querySelectorAll('.reveal');
+const observer=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+revealEls.forEach(el=>observer.observe(el));
+
+// Counter animation
+const counterEls=document.querySelectorAll('[data-target]');
+const counterObs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){const el=e.target,t=parseInt(el.dataset.target),d=2000,s=performance.now();(function u(n){const p=Math.min((n-s)/d,1),c=1-Math.pow(1-p,3);el.textContent=Math.floor(c*t).toLocaleString()+'+';if(p<1)requestAnimationFrame(u);else el.textContent=t.toLocaleString()+'+'})(performance.now());counterObs.unobserve(el)}})},{threshold:.5});
+counterEls.forEach(el=>counterObs.observe(el));
+
+// Streak bar animation
+const vals=[10,20,30,40,50,60,70,80,90];let si=2;
+setInterval(()=>{si=(si+1)%vals.length;const v=vals[si];document.getElementById('streakBar').style.width=v+'%';document.getElementById('streakLabel').textContent=v+'%'},3000);
+
+// Mobile menu
+function toggleMenu(){document.getElementById('mobileNav').classList.toggle('open')}
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})})});
+</script>
+</body>
+</html>
