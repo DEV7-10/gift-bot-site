@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useLanguage } from "@/hooks/useLanguage";
 import { ChevronDown } from "lucide-react";
+import { basePath } from "@/lib/config";
 
 const INVITE_LINK =
   "https://discord.com/oauth2/authorize?client_id=1525403769276465152&permissions=8&integration_type=0&scope=bot";
@@ -15,7 +16,7 @@ export function Hero() {
       {/* Banner as subtle background */}
       <div className="absolute inset-0 z-0">
         <img
-          src="/banner.png"
+          src={`${basePath}/banner.png`}
           alt=""
           className="w-full h-full object-cover opacity-[0.12] blur-sm scale-105"
         />
@@ -109,7 +110,7 @@ export function Hero() {
                 className="relative w-56 h-56 sm:w-72 sm:h-72 rounded-3xl overflow-hidden border-2 border-violet-600/30 shadow-2xl shadow-violet-600/20"
               >
                 <img
-                  src="/avatar.png"
+                  src={`${basePath}/avatar.png`}
                   alt="Gift Bot"
                   className="w-full h-full object-cover"
                 />

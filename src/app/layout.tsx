@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Gift Bot — The ultimate Discord bot for gift drops, lucky wheels, and streaks. Add it to your server now!",
   icons: {
-    icon: "/avatar.png",
+    icon: "/gift-bot-site/avatar.png",
   },
 };
 

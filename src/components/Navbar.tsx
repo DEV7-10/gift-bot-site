@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { useLanguage } from "@/hooks/useLanguage";
 import { LanguageToggle } from "./LanguageToggle";
+import { basePath } from "@/lib/config";
 
 const INVITE_LINK =
   "https://discord.com/oauth2/authorize?client_id=1525403769276465152&permissions=8&integration_type=0&scope=bot";
@@ -42,7 +43,7 @@ export function Navbar() {
         {/* Logo */}
         <a href="#" className="flex items-center gap-3 group">
           <div className="w-9 h-9 rounded-xl overflow-hidden border border-violet-700/40 group-hover:border-violet-500/60 transition-colors">
-            <img src="/avatar.png" alt="Gift Bot" className="w-full h-full object-cover" />
+            <img src={`${basePath}/avatar.png`} alt="Gift Bot" className="w-full h-full object-cover" />
           </div>
           <span className="font-bold text-lg text-white">Gift Bot</span>
         </a>
